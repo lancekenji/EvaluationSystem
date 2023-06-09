@@ -11,7 +11,7 @@
                         <div class="card mb-5 text-black bg-white">
                             <div class="card-body pb-4 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <div class="fs-4 fw-semibold">2</div>
+                                    <div class="fs-4 fw-semibold" id="departments"></div>
                                     <div>Total Departments</div>
                                 </div>
                                 <div>
@@ -25,7 +25,7 @@
                         <div class="card mb-5 text-black bg-white">
                             <div class="card-body pb-4 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <div class="fs-4 fw-semibold">2</div>
+                                    <div class="fs-4 fw-semibold" id="sections"></div>
                                     <div>Total Sections</div>
                                 </div>
                                 <div>
@@ -39,7 +39,7 @@
                         <div class="card mb-5 text-black bg-white">
                             <div class="card-body pb-4 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <div class="fs-4 fw-semibold">2</div>
+                                    <div class="fs-4 fw-semibold" id="professors"></div>
                                     <div>Total Professors</div>
                                 </div>
                                 <div>
@@ -53,7 +53,7 @@
                         <div class="card mb-5 text-black bg-white">
                             <div class="card-body pb-4 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <div class="fs-4 fw-semibold">3</div>
+                                    <div class="fs-4 fw-semibold" id="students"></div>
                                     <div>Total Students</div>
                                 </div>
                                 <div>

@@ -46,4 +46,8 @@ return [
     
     '/admin/users' => 'Admin@users',
     '/admin/users/list' => 'Admin@listUsers',
+    '/admin/users/create' => 'Admin@createUser',
+    '/admin/users/delete' => 'Admin@deleteUser',
+    '/admin/users/edit' => 'Admin@editUser',
+
 ];

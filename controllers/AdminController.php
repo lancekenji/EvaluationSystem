@@ -380,6 +380,73 @@ class AdminController
         loadView('admin/users');
     }
 
+    public function createUser()
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $data = [
+                'username' => $_POST['username'],
+                'password' => md5($_POST['password']),
+                'name' => $_POST['name']
+            ];
+            $user = $this->userModel->createUser($data);
+
+            if ($user) {
+                echo (json_encode(['success' => 'true']));
+                return $user;
+            }
+            echo (json_encode(['success' => 'false']));
+
+            return false;
+        }
+    }
+
+    public function deleteUser()
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $id = $_POST['user_id'];
+            $user = $this->userModel->deleteUser($id);
+
+            if ($user) {
+                if ($user) {
+                    echo (json_encode(['success' => 'true']));
+                    return $user;
+                }
+                echo (json_encode(['success' => 'false']));
+
+                return false;
+            }
+        }
+    }
+
+    public function editUser()
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $id = $_POST['user_id'];
+            $name = $_POST['name'];
+            $email = $_POST['username'];
+            if(!isset($_POST['password']) || empty($_POST['password'])){
+                $password = '';
+            } else {
+                $password = $_POST['password'];
+            }
+
+            $user = $this->userModel->editUser($id, $email, $password, $name);
+
+            if ($user) {
+                if ($user) {
+                    echo (json_encode(['success' => 'true']));
+                    exit;
+                }
+                echo (json_encode(['success' => 'false']));
+
+                return false;
+            }
+        }
+    }
+
     public function listUsers()
     {
         $users = $this->userModel->getAllUsers();

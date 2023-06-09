@@ -12,7 +12,61 @@
             },
         });
 
-        
+        <?php if($currentUrl == '/admin/dashboard') : ?>
+
+            $.ajax({
+                url: '/admin/department/list',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    var departments = data.length;
+                    $('#departments').text(departments);
+                },
+                error: function(xhr, status, error){
+                    console.error(error);
+                }
+            });
+
+            $.ajax({
+                url: '/admin/section/list',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    var sections = data.length;
+                    $('#sections').text(sections);
+                },
+                error: function(xhr, status, error){
+                    console.error(error);
+                }
+            });
+
+            $.ajax({
+                url: '/admin/professors/list',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    var professors = data.length;
+                    $('#professors').text(professors);
+                },
+                error: function(xhr, status, error){
+                    console.error(error);
+                }
+            });
+
+            $.ajax({
+                url: '/admin/students/list',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    var students = data.length;
+                    $('#students').text(students);
+                },
+                error: function(xhr, status, error){
+                    console.error(error);
+                }
+            });
+            
+        <?php endif; ?>
         <?php if($currentUrl == '/admin/department') : ?>
             // Department Table
 
@@ -850,11 +904,186 @@
                 server: {
                     url: '/admin/users/list',
                     then: data => data.map(user => [user.name, user.username, gridjs.html(`
-                    <button type="button" class="btn btn-warning text-white" onclick="$('#editUserModal').modal('show');$('#editUserModal #user_id').val('`+user.user_id+`');$('#editUserModal #fname').val('`+user.name+`');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteUserModal').modal('show');$('#deleteUserModal #user_id').val('`+user.user_id+`');">Delete</button>
+                    <button type="button" class="btn btn-warning text-white" onclick="$('#editUserModal').modal('show');$('#editUserModal #user_id2').val('`+user.user_id+`');$('#editUserModal #username1').val('`+user.username+`');$('#editUserModal #name1').val('`+user.name+`');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteUserModal').modal('show');$('#deleteUserModal #user_id1').val('`+user.user_id+`');">Delete</button>
                     `)])
                 },
                 search: true
             }).render(document.getElementById('users'));
+
+            $('#addUserForm').submit(function (event){
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+                swalInit.fire({
+                    position: 'top-end',
+                    toast: true,
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                $.ajax({
+                    url: '/admin/users/create',
+                    method: 'POST',
+                    data: formData,
+                    success: function(data){
+                        data = JSON.parse(data);
+                        $('#addUserModal').modal('hide');
+                        $('#username, #name, #password').val('');
+                        grid.forceRender();
+                        if(data.success === 'false'){
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'User adding failed!',
+                                icon: 'error',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'User added successfully!',
+                                icon: 'success',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    },
+                    error: function(error){
+                        swalInit.close();
+                        swalInit.fire({
+                            title: 'Error',
+                            text: 'There is error occurred. Please contact the administrator.',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000
+                        });
+                        console.log("Error: ", error);
+                    }
+                });
+            });
+
+            $('#deleteUserForm').submit(function (event){
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+                swalInit.fire({
+                    position: 'top-end',
+                    toast: true,
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                $.ajax({
+                    url: '/admin/users/delete',
+                    method: 'POST',
+                    data: formData,
+                    success: function(data){
+                        data = JSON.parse(data);
+                        $('#deleteUserModal').modal('hide')
+                        grid.forceRender();
+                        if(data.success === 'false'){
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'User deletion failed!',
+                                icon: 'error',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'User deleted successfully!',
+                                icon: 'success',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    },
+                    error: function(error){
+                        swalInit.close();
+                        swalInit.fire({
+                            title: 'Error',
+                            text: 'There is error occurred. Please contact the administrator.',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000
+                        });
+                        console.log("Error: ", error);
+                    }
+                });
+            });
+
+            $('#editUserForm').submit(function (event){
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+                swalInit.fire({
+                    position: 'top-end',
+                    toast: true,
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                $.ajax({
+                    url: '/admin/users/edit',
+                    method: 'POST',
+                    data: formData,
+                    success: function(data){
+                        data = JSON.parse(data);
+                        $('#editUserModal').modal('hide');
+                        grid.forceRender();
+                        if(data.success === 'false'){
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'User modification failed!',
+                                icon: 'error',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'User modified successfully!',
+                                icon: 'success',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    },
+                    error: function(error){
+                        swalInit.close();
+                        swalInit.fire({
+                            title: 'Error',
+                            text: 'There is error occurred. Please contact the administrator.',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000
+                        });
+                        console.log("Error: ", error);
+                    }
+                });
+            });
         <?php endif; ?>
     });
 

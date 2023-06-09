@@ -33,8 +33,28 @@ class UserModel
         $sql = "INSERT INTO `$this->table` VALUES (NULL, '$username', '$password', '$name');";
 
         $result = $this->db->query($sql);
-        $createUser = $result->fetch_all(MYSQLI_ASSOC);
-        return $createUser;
+        return $result;
+    }
+
+    public function editUser($id, $username, $password, $name)
+    {
+        if(empty($password)){
+            $sql = "UPDATE $this->table SET `name` = '$name', `username` = '$username', `name` = '$name' WHERE `user_id` = '$id';";
+        } else {
+            $password = md5($password);
+            $sql = "UPDATE $this->table SET `name` = '$name', `username` = '$username', `name` = '$name', `password` = '$password' WHERE `user_id` = '$id';";
+        }
+        $result = $this->db->query($sql);
+
+        return $result;
+    }
+
+    public function deleteUser($id)
+    {
+        $sql = "DELETE FROM $this->table WHERE `user_id` = '$id';";
+        $result = $this->db->query($sql);
+        
+        return $result;
     }
 
     public function getUserById($userId)
