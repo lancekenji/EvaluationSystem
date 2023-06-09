@@ -134,7 +134,7 @@
                         showConfirmButton: false,
                         timer: 3000
                     });
-                } else {
+                } else if(data.success === 'admin') {
                     swalInit.close();
                     swalInit.fire({
                         text: 'Logged in successfully!',
@@ -145,6 +145,30 @@
                         timer: 3000
                     }).then(() => {
                         window.location = '/admin/dashboard';
+                    });
+                } else if(data.success === 'professor') {
+                    swalInit.close();
+                    swalInit.fire({
+                        text: 'Logged in successfully!',
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    }).then(() => {
+                        window.location = '/professor/dashboard';
+                    });
+                } else if(data.success === 'student') {
+                    swalInit.close();
+                    swalInit.fire({
+                        text: 'Logged in successfully!',
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    }).then(() => {
+                        window.location = '/student/dashboard';
                     });
                 }
             },

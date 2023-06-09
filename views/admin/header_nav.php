@@ -7,7 +7,7 @@
         <ul class="header-nav ms-3">
             <li class="nav-item dropdown">
                 <a class="nav-link py-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                    Admin <img class="icon me-2" src="views/vendors/@coreui/icons/svg/free/cil-caret-bottom.svg"/>
+                    <?=$_SESSION['name']?> <img class="icon me-2" src="views/vendors/@coreui/icons/svg/free/cil-caret-bottom.svg"/>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end pt-0">
                     <div class="dropdown-header bg-light py-2">
@@ -15,7 +15,7 @@
                     </div>
                     <a class="dropdown-item" href="#">
                         <img class="icon me-2" src="views/vendors/@coreui/icons/svg/free/cil-cog.svg"/> Manage Profile</a>
-                    <a class="dropdown-item" href="#">
+                    <a class="dropdown-item" href="/logout">
                         <img class="icon me-2" src="views/vendors/@coreui/icons/svg/free/cil-exit-to-app.svg"/> Logout</a>
                 </div>
             </li>

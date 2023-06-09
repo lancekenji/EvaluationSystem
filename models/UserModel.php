@@ -29,8 +29,8 @@ class UserModel
     {
         $username = $userData['username'];
         $password = md5($userData['password']);
-        $role = $userData['role'];
-        $sql = "INSERT INTO `$this->table` VALUES (NULL, '$username', '$password', '$role');";
+        $name = $userData['name'];
+        $sql = "INSERT INTO `$this->table` VALUES (NULL, '$username', '$password', '$name');";
 
         $result = $this->db->query($sql);
         $createUser = $result->fetch_all(MYSQLI_ASSOC);
@@ -46,9 +46,9 @@ class UserModel
         return $id;
     }
 
-    public function getUserByUsernameAndRole($userName, $role)
+    public function getUserByUsername($userName)
     {
-        $sql = "SELECT * FROM $this->table WHERE username = '$userName' AND role = '$role'";
+        $sql = "SELECT * FROM $this->table WHERE username = '$userName'";
         $result = $this->db->query($sql);
         $user = $result->fetch_assoc();
 

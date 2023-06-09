@@ -844,11 +844,15 @@
 
         <?php if($currentUrl == '/admin/users') : ?>
             // Users Table
-            new gridjs.Grid({ 
-                columns: ['Position', 'Email', 'Actions'],
-                data: [
-                    ['Super Admin', 'lancekenjiparce@gmail.com', gridjs.html(`<button type="button" class="btn btn-warning text-white">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white">Delete</button>`)]
-                ],
+
+            var grid = new gridjs.Grid({ 
+                columns: ['Name', 'Email', 'Actions'],
+                server: {
+                    url: '/admin/users/list',
+                    then: data => data.map(user => [user.name, user.username, gridjs.html(`
+                    <button type="button" class="btn btn-warning text-white" onclick="$('#editUserModal').modal('show');$('#editUserModal #user_id').val('`+user.user_id+`');$('#editUserModal #fname').val('`+user.name+`');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteUserModal').modal('show');$('#deleteUserModal #user_id').val('`+user.user_id+`');">Delete</button>
+                    `)])
+                },
                 search: true
             }).render(document.getElementById('users'));
         <?php endif; ?>

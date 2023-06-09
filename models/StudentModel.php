@@ -55,6 +55,15 @@ class StudentModel
         return $result;
     }
 
+    public function getStudentByEmail($email)
+    {
+        $sql = "SELECT * FROM $this->table WHERE email = '$email'";
+        $result = $this->db->query($sql);
+        $student = $result->fetch_assoc();
+
+        return $student;
+    }
+
     // Probably, will use this function in the future...
     public function getStudentById($studentId)
     {

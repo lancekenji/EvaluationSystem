@@ -43,5 +43,7 @@ return [
     '/admin/students/list' => 'Admin@listStudent',
 
     '/admin/evaluation' => 'Admin@evaluation',
+    
     '/admin/users' => 'Admin@users',
+    '/admin/users/list' => 'Admin@listUsers',
 ];

@@ -3,11 +3,11 @@ session_start();
 
 class AdminController
 {
-    private $departmentModel, $sectionModel, $professorModel, $studentModel;
+    private $departmentModel, $sectionModel, $professorModel, $studentModel, $userModel;
 
     public function __construct()
     {
-        if (!isset($_SESSION['user_id']) && $_SESSION['role_id'] != '1') {
+        if (!isset($_SESSION['user_id']) && $_SESSION['role'] !== 'admin') {
             header('Location: /');
         }
 
@@ -15,6 +15,7 @@ class AdminController
         $this->sectionModel = new SectionModel();
         $this->professorModel = new ProfessorModel();
         $this->studentModel = new StudentModel();
+        $this->userModel = new UserModel();
     }
 
     public function index()
@@ -264,7 +265,9 @@ class AdminController
         return false;
     }
 
-    /* EMD Professors Actions */
+    /* END Professors Actions */
+
+    /* START Students Actions */
 
     public function students()
     {
@@ -363,13 +366,27 @@ class AdminController
         return false;
     }
 
+    /* END Students Actions */
+
     public function evaluation()
     {
         loadView('admin/evaluation');
     }
 
+    /* START Users Actions */
+    
     public function users()
     {
         loadView('admin/users');
     }
+
+    public function listUsers()
+    {
+        $users = $this->userModel->getAllUsers();
+        echo json_encode($users);
+
+        return $users;
+    }
+
+    /* END Users Actions */
 }

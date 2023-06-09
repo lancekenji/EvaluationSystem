@@ -55,6 +55,15 @@ class ProfessorModel
         return $result;
     }
 
+    public function getProfessorByEmail($email)
+    {
+        $sql = "SELECT * FROM $this->table WHERE email = '$email'";
+        $result = $this->db->query($sql);
+        $professor = $result->fetch_assoc();
+
+        return $professor;
+    }
+
     // Probably, will use this function in the future...
     public function getProfessorById($professorId)
     {
