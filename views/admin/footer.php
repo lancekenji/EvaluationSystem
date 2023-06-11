@@ -258,6 +258,22 @@
         
         <?php endif; ?>
 
+        <?php if($_SERVER['REQUEST_URI'] === '/admin/questions/'): ?>
+            // Question Table
+
+            var grid = new gridjs.Grid({ 
+                columns: ['Question Text', 'Actions'],
+                server: {
+                    url: '/admin/questions/<?=end(explode('/', $_SERVER['REQUEST_URI']))?>/list',
+                    then: data => data.map(question => [question.question_text, gridjs.html(`
+                    <button type="button" class="btn btn-warning text-white" onclick="$('#editQuestionModal').modal('show');$('#editQuestionModal #question_id').val('`+question.question_id+`');$('#editQuestionModal #question_text').val('`+question.question_text+`');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteQuestionModal').modal('show');$('#deleteQuestionModal #question_id').val('`+question.question_id+`');">Delete</button>
+                    `)])
+                },
+                search: true
+            }).render(document.getElementById('questions'));
+
+
+        <?php endif; ?>
         <?php if($currentUrl == '/admin/section') : ?>
             // Section Table
 
@@ -887,13 +903,192 @@
 
         <?php if($currentUrl == '/admin/evaluation') : ?>
             // Evaluation Table
-            new gridjs.Grid({ 
+            var grid = new gridjs.Grid({ 
                 columns: ['Category', 'Actions'],
-                data: [
-                    ['A. KNOWLEDGE OF THE SUBJECT MATTER', gridjs.html(`<button type="button" class="btn btn-primary text-white">Questions</button>&nbsp;<button type="button" class="btn btn-warning text-white">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white">Delete</button>`)]
-                ],
+                server: {
+                    url: '/admin/category/list',
+                    then: data => data.map(category => [category.category_name, gridjs.html(`
+                    <button type="button" class="btn btn-primary text-white" onclick="window.location='/admin/questions/1'">Questions</button>&nbsp; 
+                    <button type="button" class="btn btn-warning text-white" onclick="$('#editCategoryModal').modal('show');$('#editCategoryModal #category_id').val('`+category.category_id+`');$('#editCategoryModal #category_name').val('`+category.category_name+`');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteCategoryModal').modal('show');$('#deleteCategoryModal #category_id').val('`+category.category_id+`');">Delete</button>
+                    `)])
+                },
                 search: true
             }).render(document.getElementById('category'));
+
+            $('#editCategoryForm').submit(function (event){
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+                swalInit.fire({
+                    position: 'top-end',
+                    toast: true,
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                $.ajax({
+                    url: '/admin/category/edit',
+                    method: 'POST',
+                    data: formData,
+                    success: function(data){
+                        data = JSON.parse(data);
+                        $('#editCategoryModal').modal('hide');
+                        grid.forceRender();
+                        if(data.success === 'false'){
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Category modification failed!',
+                                icon: 'error',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Category modified successfully!',
+                                icon: 'success',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    },
+                    error: function(error){
+                        swalInit.close();
+                        swalInit.fire({
+                            title: 'Error',
+                            text: 'There is error occurred. Please contact the administrator.',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000
+                        });
+                        console.log("Error: ", error);
+                    }
+                });
+            });
+
+            $('#addCategoryForm').submit(function (event){
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+                swalInit.fire({
+                    position: 'top-end',
+                    toast: true,
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                $.ajax({
+                    url: '/admin/category/create',
+                    method: 'POST',
+                    data: formData,
+                    success: function(data){
+                        data = JSON.parse(data);
+                        $('#addCategoryModal').modal('hide');
+                        $('#category_name').val('');
+                        grid.forceRender();
+                        if(data.success === 'false'){
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Category adding failed!',
+                                icon: 'error',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Category added successfully!',
+                                icon: 'success',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    },
+                    error: function(error){
+                        swalInit.close();
+                        swalInit.fire({
+                            title: 'Error',
+                            text: 'There is error occurred. Please contact the administrator.',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000
+                        });
+                        console.log("Error: ", error);
+                    }
+                });
+            });
+
+            $('#deleteCategoryForm').submit(function (event){
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+                swalInit.fire({
+                    position: 'top-end',
+                    toast: true,
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                $.ajax({
+                    url: '/admin/category/delete',
+                    method: 'POST',
+                    data: formData,
+                    success: function(data){
+                        data = JSON.parse(data);
+                        $('#deleteCategoryModal').modal('hide')
+                        grid.forceRender();
+                        if(data.success === 'false'){
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Category deletion failed!',
+                                icon: 'error',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Category deleted successfully!',
+                                icon: 'success',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    },
+                    error: function(error){
+                        swalInit.close();
+                        swalInit.fire({
+                            title: 'Error',
+                            text: 'There is error occurred. Please contact the administrator.',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000
+                        });
+                        console.log("Error: ", error);
+                    }
+                });
+            });
         <?php endif; ?>
 
         <?php if($currentUrl == '/admin/users') : ?>

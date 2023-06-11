@@ -36,18 +36,31 @@ return [
     '/admin/professors/list' => 'Admin@listProfessor',
 
     '/admin/students' => 'Admin@students',
-
     '/admin/students/create' => 'Admin@createStudent',
     '/admin/students/delete' => 'Admin@deleteStudent',
     '/admin/students/edit' => 'Admin@editStudent',
     '/admin/students/list' => 'Admin@listStudent',
 
     '/admin/evaluation' => 'Admin@evaluation',
+
+    '/admin/category/list' => 'Admin@listCategory',
+    '/admin/category/create' => 'Admin@createCategory',
+    '/admin/category/delete' => 'Admin@deleteCategory',
+    '/admin/category/edit' => 'Admin@editCategory',
+
+    '/admin/questions/{id}' => 'Admin@questions',
+    '/admin/questions/{id}/list' => 'Admin@questionList',
     
     '/admin/users' => 'Admin@users',
     '/admin/users/list' => 'Admin@listUsers',
     '/admin/users/create' => 'Admin@createUser',
     '/admin/users/delete' => 'Admin@deleteUser',
     '/admin/users/edit' => 'Admin@editUser',
+
+    // Student routes
+    '/student/dashboard' => 'Student@index',
+
+    // Professor routes
+    '/professor/dashboard' => 'Professor@index',
 
 ];

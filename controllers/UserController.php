@@ -2,13 +2,15 @@
 session_start();
 
 class UserController {
-    private $userModel, $studentModel, $professorModel;
+    private $userModel, $studentModel, $professorModel, $sectionModel, $departmentModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
         $this->studentModel = new StudentModel();
         $this->professorModel = new ProfessorModel();
+        $this->sectionModel = new SectionModel();
+        $this->departmentModel = new DepartmentModel();
     }
 
     public function login() {
@@ -33,9 +35,11 @@ class UserController {
             } elseif($role == '2'){
                 if($professor) {
                     if(md5($password) == $professor['password']){
+                        $department = $this->departmentModel->getDepartmentById($professor['department_id']);
                         $_SESSION['user_id'] = $professor['professor_id'];
                         $_SESSION['role'] = 'professor';
                         $_SESSION['name'] = $professor['fname'].' '.$professor['lname'];
+                        $_SESSION['department'] = $department['department_name'];
                         echo(json_encode(['success' => 'professor']));
                         exit;
                     }
@@ -43,9 +47,13 @@ class UserController {
             } elseif($role == '3'){
                 if($student) {
                     if(md5($password) == $student['password']){
+                        $section = $this->sectionModel->getSectionById($student['section_id']);
+                        $department = $this->departmentModel->getDepartmentById($student['department_id']);
                         $_SESSION['user_id'] = $student['student_id'];
                         $_SESSION['role'] = 'student';
                         $_SESSION['name'] = $student['fname'].' '.$student['lname'];
+                        $_SESSION['section'] = $section['section_name'];
+                        $_SESSION['department'] = $department['department_name'];
                         echo(json_encode(['success' => 'student']));
                         exit;
                     }

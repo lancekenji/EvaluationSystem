@@ -1,0 +1,60 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "c4aad512a8fbfc53079917e931e00f3a",
+    "packages": [
+        {
+            "name": "iamjohndev/ijd-dynamic-question",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PseudoDevs/IamJohnDynamic.git",
+                "reference": "00ddcd2f381e46b1b7a78ee3d2f9c8bf0daa9f76"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PseudoDevs/IamJohnDynamic/zipball/00ddcd2f381e46b1b7a78ee3d2f9c8bf0daa9f76",
+                "reference": "00ddcd2f381e46b1b7a78ee3d2f9c8bf0daa9f76",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mysqli": "*",
+                "php": "^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "IamJohnDynamic\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "John Lester Legaspi",
+                    "email": "contact@iamjohndev.fun"
+                }
+            ],
+            "description": "A PHP library for creating dynamic questions for your evaluation system.",
+            "support": {
+                "issues": "https://github.com/PseudoDevs/IamJohnDynamic/issues",
+                "source": "https://github.com/PseudoDevs/IamJohnDynamic/tree/1.0.0"
+            },
+            "time": "2023-06-07T10:20:10+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}

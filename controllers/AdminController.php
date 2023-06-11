@@ -3,7 +3,7 @@ session_start();
 
 class AdminController
 {
-    private $departmentModel, $sectionModel, $professorModel, $studentModel, $userModel;
+    private $departmentModel, $sectionModel, $professorModel, $studentModel, $userModel, $categoryModel, $questionModel;
 
     public function __construct()
     {
@@ -16,6 +16,8 @@ class AdminController
         $this->professorModel = new ProfessorModel();
         $this->studentModel = new StudentModel();
         $this->userModel = new UserModel();
+        $this->categoryModel = new CategoryModel();
+        $this->questionModel = new QuestionModel();
     }
 
     public function index()
@@ -368,10 +370,152 @@ class AdminController
 
     /* END Students Actions */
 
+    /* START Question Actions */
+
+    public function questions($id)
+    {
+        loadView('admin/questions');
+    }
+
+    public function listQuestion($id)
+    {
+        $question = $this->questionModel->getAllQuestionByCategoryId($id);
+        echo json_encode($question);
+
+        return $question;
+    }
+
+    public function createQuestion($id){
+        
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $question_text = $_POST['question_text'];
+            $category_id = $_POST['category_id'];
+            $question = $this->questionModel->createQuestion($question_text, $category_id);
+
+            if ($question) {
+                echo (json_encode(['success' => 'true']));
+                return $question;
+            }
+            echo (json_encode(['success' => 'false']));
+
+            return false;
+        }
+    }
+
+    public function editQuestion($id)
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $question_id = $_POST['question_id'];
+            $question_text = $_POST['question_text'];
+            $category_id = $_POST['category_id'];
+
+            $question = $this->questionModel->editQuestion($question_id, $question_text, $category_id);
+
+            if ($question) {
+                if ($question) {
+                    echo (json_encode(['success' => 'true']));
+                    exit;
+                }
+                echo (json_encode(['success' => 'false']));
+
+                return false;
+            }
+        }
+    }
+
+    public function deleteQuestion($id)
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $question_id = $_POST['question_id'];
+            $question = $this->questionModel->deleteQuestion($question_id);
+
+            if ($question) {
+                if ($question) {
+                    echo (json_encode(['success' => 'true']));
+                    return $question;
+                }
+                echo (json_encode(['success' => 'false']));
+
+                return false;
+            }
+        }
+    }
+
+    /* END Question Actions */
+    /* START Evaluation Actions */
+
     public function evaluation()
     {
         loadView('admin/evaluation');
     }
+
+    public function listCategory()
+    {
+        $category = $this->categoryModel->getAllCategory();
+        echo json_encode($category);
+
+        return $category;
+    }
+
+    public function createCategory(){
+        
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $name = $_POST['category_name'];
+            $category = $this->categoryModel->createCategory($name);
+
+            if ($category) {
+                echo (json_encode(['success' => 'true']));
+                return $category;
+            }
+            echo (json_encode(['success' => 'false']));
+
+            return false;
+        }
+    }
+
+    public function editCategory()
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $id = $_POST['category_id'];
+            $name = $_POST['category_name'];
+
+            $category = $this->categoryModel->editCategory($id, $name);
+
+            if ($category) {
+                if ($category) {
+                    echo (json_encode(['success' => 'true']));
+                    exit;
+                }
+                echo (json_encode(['success' => 'false']));
+
+                return false;
+            }
+        }
+    }
+
+    public function deleteCategory()
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $id = $_POST['category_id'];
+            $category = $this->categoryModel->deleteCategory($id);
+
+            if ($category) {
+                if ($category) {
+                    echo (json_encode(['success' => 'true']));
+                    return $category;
+                }
+                echo (json_encode(['success' => 'false']));
+
+                return false;
+            }
+        }
+    }
+
+    /* END Evaluation Actions */
 
     /* START Users Actions */
     
