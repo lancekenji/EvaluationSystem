@@ -449,7 +449,7 @@
                 server: {
                     url: '/admin/questions/<?=basename($_SERVER['REQUEST_URI'])?>/list',
                     then: data => data.map(question => [question.question_text, gridjs.html(`
-                    <button type="button" class="btn btn-warning text-white" onclick="$('#editQuestionModal').modal('show');$('#editQuestionModal #question_id1').val('`+question.question_id+`');$('#editQuestionModal #question_text1').val('`+question.question_text+`');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteQuestionModal').modal('show');$('#deleteQuestionModal #question_id').val('`+question.question_id+`');">Delete</button>
+                    <button type="button" class="btn btn-warning text-white" onclick="$('#editQuestionModal').modal('show');$('#editQuestionModal #question_id1').val('`+question.question_id+`');$('#editQuestionModal #question_text1').val('${question.question_text.replace(/'/g, "\\'")}');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteQuestionModal').modal('show');$('#deleteQuestionModal #question_id').val('`+question.question_id+`');">Delete</button>
                     `)])
                 },
                 search: true
