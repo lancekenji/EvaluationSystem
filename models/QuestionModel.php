@@ -25,9 +25,18 @@ class QuestionModel
         return $category;
     }
 
+    public function getAllQuestion()
+    {
+        $sql = "SELECT * FROM $this->table";
+        $result = $this->db->query($sql);
+        $question = $result->fetch_all(MYSQLI_ASSOC);
+        
+        return $question;
+    }
+
     public function createQuestion($question_text, $category_id)
     {
-        $sql = "INSERT INTO $this->table VALUES (NULL, '$category_id', '$question_text');";
+        $sql = "INSERT INTO $this->table VALUES (NULL, '$category_id', '".$this->db->real_escape_string($question_text)."');";
         $result = $this->db->query($sql);
         
         return $result;
@@ -35,7 +44,7 @@ class QuestionModel
 
     public function editQuestion($id, $question_text, $category_id)
     {
-        $sql = "UPDATE $this->table SET `question_text` = '$question_text', `category_id` = '$category_id' WHERE `question_id` = '$id';";
+        $sql = "UPDATE $this->table SET `question_text` = '".$this->db->real_escape_string($question_text)."', `category_id` = '$category_id' WHERE `question_id` = '$id';";
         $result = $this->db->query($sql);
         
         return $result;

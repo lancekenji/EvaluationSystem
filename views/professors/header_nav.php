@@ -13,7 +13,7 @@
                     <div class="dropdown-header bg-light py-2">
                         <div class="fw-semibold">Account</div>
                     </div>
-                    <a class="dropdown-item" href="#">
+                    <a class="dropdown-item" href="#" data-coreui-toggle="modal" data-coreui-target="#manageProfile">
                         <img class="icon me-2" src="views/vendors/@coreui/icons/svg/free/cil-cog.svg"/> Manage Profile</a>
                     <a class="dropdown-item" href="/logout">
                         <img class="icon me-2" src="views/vendors/@coreui/icons/svg/free/cil-exit-to-app.svg"/> Logout</a>
@@ -22,3 +22,44 @@
         </ul>
     </div>
 </header>
+<div class="modal fade" id="manageProfile" tabindex="-1" aria-labelledby="manageProfileLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="manageProfileForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="manageProfileLabel">Manage Profile</h5>
+                    <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name</label>
+                            <input type="text" class="form-control" placeholder="Name" name="fname" id="fname" value="<?=$_SESSION['fname']?>" required/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" class="form-control" placeholder="Name" name="lname" id="lname" value="<?=$_SESSION['lname']?>" required/>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" placeholder="Email Address" name="email" id="email" value="<?=$_SESSION['username']?>" required/>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Password <small>(Leave blank if you don't want to change the password)</small></label>
+                            <input type="password" class="form-control" placeholder="Password" name="password" id="password"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="professor_id" id="professor_id" value="<?=$_SESSION['user_id']?>"/>
+                    <button type="button" class="btn btn-secondary text-white" data-coreui-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success text-white">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

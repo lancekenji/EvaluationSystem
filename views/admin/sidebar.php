@@ -36,9 +36,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/admin/evaluation" <?php if($currentUrl == '/admin/evaluation'){echo('style="background-color:yellow;color:black;"');} ?>>
+                <a class="nav-link" href="/admin/evaluation" <?php if($currentUrl == '/admin/evaluation' || (rtrim(dirname($_SERVER['REQUEST_URI']), '/') . '/') == '/admin/questions/'){echo('style="background-color:yellow;color:black;"');} ?>>
                     <img class="nav-icon" src="views/vendors/@coreui/icons/svg/free/cil-notes.svg"/>
                     Evaluation
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/result" <?php if($currentUrl == '/admin/result'){echo('style="background-color:yellow;color:black;"');} ?>>
+                    <img class="nav-icon" src="views/vendors/@coreui/icons/svg/free/cil-chart-pie.svg"/>
+                    Evaluation Result
                 </a>
             </li>
             <li class="nav-item">

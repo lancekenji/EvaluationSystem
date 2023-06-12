@@ -27,31 +27,48 @@ if (($pos = strpos($requestUri, '?')) !== false) {
 }
 
 // Find the corresponding controller and action for the requested route
-if (isset($routes[$requestUri])) {
-    [$controllerName, $action] = explode('@', $routes[$requestUri]);
-    $controllerName = ucfirst($controllerName) . 'Controller';
+$matchedRoute = false;
 
-    // Check if the controller class exists
-    if (class_exists($controllerName)) {
-        $controller = new $controllerName();
+foreach ($routes as $route => $handler) {
+    // Replace route parameters with regular expressions
+    $pattern = '#^' . preg_replace('#\{([\w]+)\}#', '([\w]+)', $route) . '$#';
 
-        // Check if the action method exists in the controller
-        if (method_exists($controller, $action)) {
-            // Call the action method
-            $controller->$action();
+    // Check if the requested URI matches the route pattern
+    if (preg_match($pattern, $requestUri, $matches)) {
+        $matchedRoute = true;
+
+        // Remove the first element, which contains the full matched string
+        array_shift($matches);
+
+        [$controllerName, $action] = explode('@', $handler);
+        $controllerName = ucfirst($controllerName) . 'Controller';
+
+        // Check if the controller class exists
+        if (class_exists($controllerName)) {
+            $controller = new $controllerName();
+
+            // Check if the action method exists in the controller
+            if (method_exists($controller, $action)) {
+                // Call the action method with the matched route parameters
+                $controller->$action(...$matches);
+            } else {
+                // Handle 404 Not Found error - Action method not found
+                http_response_code(404);
+                echo '404 Not Found - Action method not found';
+                exit;
+            }
         } else {
-            // Handle 404 Not Found error - Action method not found
+            // Handle 404 Not Found error - Controller class not found
             http_response_code(404);
-            echo '404 Not Found - Action method not found';
+            echo '404 Not Found - Controller class not found';
             exit;
         }
-    } else {
-        // Handle 404 Not Found error - Controller class not found
-        http_response_code(404);
-        echo '404 Not Found - Controller class not found';
-        exit;
+
+        break; // Exit the loop after finding a matched route
     }
-} else {
+}
+
+if (!$matchedRoute) {
     // Handle 404 Not Found error - Route not found
     http_response_code(404);
     echo '404 Not Found - Route not found';

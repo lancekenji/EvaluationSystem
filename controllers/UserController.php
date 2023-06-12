@@ -28,6 +28,7 @@ class UserController {
                         $_SESSION['user_id'] = $user['user_id'];
                         $_SESSION['role'] = 'admin';
                         $_SESSION['name'] = $user['name'];
+                        $_SESSION['username'] = $user['username'];
                         echo(json_encode(['success' => 'admin']));
                         exit;
                     }
@@ -38,8 +39,12 @@ class UserController {
                         $department = $this->departmentModel->getDepartmentById($professor['department_id']);
                         $_SESSION['user_id'] = $professor['professor_id'];
                         $_SESSION['role'] = 'professor';
+                        $_SESSION['fname'] = $professor['fname'];
+                        $_SESSION['lname'] = $professor['lname'];
                         $_SESSION['name'] = $professor['fname'].' '.$professor['lname'];
                         $_SESSION['department'] = $department['department_name'];
+                        $_SESSION['department_id'] = $department['department_id'];
+                        $_SESSION['username'] = $professor['email'];
                         echo(json_encode(['success' => 'professor']));
                         exit;
                     }
@@ -51,9 +56,15 @@ class UserController {
                         $department = $this->departmentModel->getDepartmentById($student['department_id']);
                         $_SESSION['user_id'] = $student['student_id'];
                         $_SESSION['role'] = 'student';
+                        $_SESSION['fname'] = $student['fname'];
+                        $_SESSION['lname'] = $student['lname'];
                         $_SESSION['name'] = $student['fname'].' '.$student['lname'];
                         $_SESSION['section'] = $section['section_name'];
+                        $_SESSION['section_id'] = $section['section_id'];
                         $_SESSION['department'] = $department['department_name'];
+                        $_SESSION['department_id'] = $department['department_id'];
+                        $_SESSION['username'] = $student['email'];
+                        $_SESSION['year_level'] = $student['year_level'];
                         echo(json_encode(['success' => 'student']));
                         exit;
                     }

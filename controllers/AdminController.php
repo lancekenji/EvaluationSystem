@@ -3,7 +3,7 @@ session_start();
 
 class AdminController
 {
-    private $departmentModel, $sectionModel, $professorModel, $studentModel, $userModel, $categoryModel, $questionModel;
+    private $departmentModel, $sectionModel, $professorModel, $studentModel, $userModel, $categoryModel, $questionModel, $evaluationModel;
 
     public function __construct()
     {
@@ -18,6 +18,7 @@ class AdminController
         $this->userModel = new UserModel();
         $this->categoryModel = new CategoryModel();
         $this->questionModel = new QuestionModel();
+        $this->evaluationModel = new EvaluationModel();
     }
 
     public function index()
@@ -267,6 +268,17 @@ class AdminController
         return false;
     }
 
+    public function getProfessorByDepartment($department_id)
+    {
+        $professors = $this->professorModel->getProfessorByDepartmentID($department_id);
+        if($professors){
+            echo(json_encode($professors));
+        }
+
+        return $professors;
+
+    }
+
     /* END Professors Actions */
 
     /* START Students Actions */
@@ -389,9 +401,7 @@ class AdminController
         
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_text = $_POST['question_text'];
-            $category_id = $_POST['category_id'];
-            $question = $this->questionModel->createQuestion($question_text, $category_id);
-
+            $question = $this->questionModel->createQuestion($question_text, $id);
             if ($question) {
                 echo (json_encode(['success' => 'true']));
                 return $question;
@@ -408,9 +418,8 @@ class AdminController
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_id = $_POST['question_id'];
             $question_text = $_POST['question_text'];
-            $category_id = $_POST['category_id'];
 
-            $question = $this->questionModel->editQuestion($question_id, $question_text, $category_id);
+            $question = $this->questionModel->editQuestion($question_id, $question_text, $id);
 
             if ($question) {
                 if ($question) {
@@ -444,6 +453,7 @@ class AdminController
     }
 
     /* END Question Actions */
+
     /* START Evaluation Actions */
 
     public function evaluation()
@@ -591,6 +601,34 @@ class AdminController
         }
     }
 
+    public function editUser1()
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $id = $_POST['user_id'];
+            $name = $_POST['name'];
+            $email = $_POST['username'];
+            if(!isset($_POST['password']) || empty($_POST['password'])){
+                $password = '';
+            } else {
+                $password = $_POST['password'];
+            }
+
+            $user = $this->userModel->editUser($id, $email, $password, $name);
+
+            if ($user) {
+                if ($user) {
+                    echo (json_encode(['success' => 'true']));
+                    exit;
+                }
+                echo (json_encode(['success' => 'false']));
+                $_SESSION['name'] = $name;
+                $_SESSION['email'] = $email;
+                return false;
+            }
+        }
+    }
+
     public function listUsers()
     {
         $users = $this->userModel->getAllUsers();
@@ -600,4 +638,180 @@ class AdminController
     }
 
     /* END Users Actions */
+
+    public function result()
+    {
+        loadView('admin/result');
+    }
+    public function countEvaluatedStudent($professor_id)
+    {
+        $count = $this->evaluationModel->countEvaluated($professor_id);
+        if($count){
+            echo(json_encode($count));
+        }
+
+        return $count;
+    }
+
+    public function total($professor_id)
+    {
+        $questions = $this->questionModel->getAllQuestion();
+        $result = [];
+        $total1 = [];
+        if($questions){
+            foreach($questions as $q){
+                $id = $q['question_id'];
+                $total = $this->evaluationModel->calculateEvaluation($professor_id, $id);
+                if($total){
+                    $total1['question_text'] = $q['question_text'];
+                    try {
+                        $total1['percentage5'] = strval(((int) $total['answered_5_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage5'] = '0%';
+                    }
+                    
+                    try {
+                        $total1['percentage4'] = strval(((int) $total['answered_4_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage4'] = '0%';
+                    }
+                    
+                    try {
+                        $total1['percentage3'] = strval(((int) $total['answered_3_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage3'] = '0%';
+                    }
+                    
+                    try {
+                        $total1['percentage2'] = strval(((int) $total['answered_2_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage2'] = '0%';
+                    }
+                    
+                    try {
+                        $total1['percentage1'] = strval(((int) $total['answered_1_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage1'] = '0%';
+                    }
+                    
+
+                    $result[] = $total1;
+                }
+            }
+        }
+        echo(json_encode($result));
+        return $result;
+    }
+
+    public function printResult($professor_id, $department_id)
+    {
+        $get_professor = $this->professorModel->getProfessorById($professor_id);
+        $get_department = $this->departmentModel->getDepartmentById($department_id);
+        $department = $get_department['department_name'];
+        $name = $get_professor['fname'].' '.$get_professor['lname'];
+        $questions = $this->questionModel->getAllQuestion();
+        $html = "
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Evaluation Report</title>
+            <style>
+                * {
+                    font-family: 'Arial';
+                }
+
+                h2 {
+                    text-align: center;
+                }
+
+                table {
+                    margin: 0 auto;
+                    border-collapse: collapse;
+                }
+
+                th, td {
+                    border: 1px solid #000;
+                    padding: 8px;
+                }
+
+                th {
+                    background-color: #f2f2f2;
+                }
+
+                @page { size: auto;  margin: 0mm; }
+            </style>
+        </head>
+        <body>
+            <h2>Evaluation Report</h2>
+            <hr>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan='3'>Professor: ".$name."</th>
+                        <th colspan='3'>Department: ".$department."</th>
+                    </tr>
+                    <tr>
+                        <th width='200'>Question</th>
+                        <th width='50'>5</th>
+                        <th width='50'>4</th>
+                        <th width='50'>3</th>
+                        <th width='50'>2</th>
+                        <th width='50'>1</th>
+                    </tr>
+                </thead>
+                <tbody>
+        ";
+        if($questions){
+            $total1 = [];
+            foreach($questions as $q){
+                $id = $q['question_id'];
+                $total = $this->evaluationModel->calculateEvaluation($professor_id, $id);
+                if($total){
+                    $html .= '<tr>';
+                    try {
+                        $total1['percentage5'] = strval(((int) $total['answered_5_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage5'] = '0%';
+                    }
+                    
+                    try {
+                        $total1['percentage4'] = strval(((int) $total['answered_4_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage4'] = '0%';
+                    }
+                    
+                    try {
+                        $total1['percentage3'] = strval(((int) $total['answered_3_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage3'] = '0%';
+                    }
+                    
+                    try {
+                        $total1['percentage2'] = strval(((int) $total['answered_2_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage2'] = '0%';
+                    }
+                    
+                    try {
+                        $total1['percentage1'] = strval(((int) $total['answered_1_count'] / (int) $total['total_respondents']) * 100) . '%';
+                    } catch (DivisionByZeroError $e) {
+                        $total1['percentage1'] = '0%';
+                    }
+                    $html .= '<td>'.$q['question_text'].'</td>';
+                    $html .= "<td>".$total1['percentage5'].'</td>';
+                    $html .= "<td>".$total1['percentage4'].'</td>';
+                    $html .= "<td>".$total1['percentage3'].'</td>';
+                    $html .= "<td>".$total1['percentage2'].'</td>';
+                    $html .= "<td>".$total1['percentage1'].'</td>';
+                    $html .= "</tr>";
+                }
+            }
+
+            $html .= "</tbody><tfoot><tr>
+            <th colspan='6'>Total Students Evaluated: ".$total['total_respondents']."</th>
+        </tr></tfoot></table><script>window.print();</script></body></html>";
+        }
+        echo($html);
+        return $html;
+    }
 }

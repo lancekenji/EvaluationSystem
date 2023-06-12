@@ -64,6 +64,15 @@ class ProfessorModel
         return $professor;
     }
 
+    public function getProfessorByDepartmentID($department_id)
+    {
+        $sql = "SELECT * FROM $this->table WHERE `department_id` = '$department_id'";
+        $result = $this->db->query($sql);
+        $professor = $result->fetch_all(MYSQLI_ASSOC);
+
+        return $professor;
+    }
+
     // Probably, will use this function in the future...
     public function getProfessorById($professorId)
     {

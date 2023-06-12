@@ -29,4 +29,9 @@
     <script src="views/dist/vendors/simplebar/js/simplebar.min.js"></script>
     <script src="views/dist/js/sweet_alert.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+    <style>
+        .custom-center {
+            text-align: center;
+        }
+    </style>
 </head>

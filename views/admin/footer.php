@@ -12,6 +12,172 @@
             },
         });
 
+        $('#manageProfileForm').submit(function (event){
+            event.preventDefault();
+
+            var formData = $(this).serialize();
+            swalInit.fire({
+                position: 'top-end',
+                toast: true,
+                text: 'Please wait...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+            $.ajax({
+                url: '/admin/manage',
+                method: 'POST',
+                data: formData,
+                success: function(data){
+                    data = JSON.parse(data);
+                    $('#manageProfile').modal('hide');
+                    if(data.success === 'false'){
+                        swalInit.close();
+                        swalInit.fire({
+                            text: 'User modification failed!',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    } else {
+                        swalInit.close();
+                        swalInit.fire({
+                            text: 'User modified successfully!',
+                            icon: 'success',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    }
+                },
+                error: function(error){
+                    swalInit.close();
+                    swalInit.fire({
+                        title: 'Error',
+                        text: 'There is error occurred. Please contact the administrator.',
+                        icon: 'error',
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000
+                    });
+                    console.log("Error: ", error);
+                }
+            });
+        });
+
+        <?php if($currentUrl == '/admin/result') : ?>
+
+            $.ajax({
+                url: '/admin/department/list',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response){
+                    var select = $("#department");
+
+                    $.each(response, function(index, item){
+                        var option = $("<option>").val(item.department_id).text(item.department_name);
+                        select.append(option);
+                    });
+                },
+                error: function(xhr, status, error){
+                    console.error(error);
+                }
+            });
+
+            $("#department").change(function() {
+                $.ajax({
+                    url: '/admin/professors/list/'+$(this).val(),
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(response){
+                        var select = $("#professor");
+
+                        $.each(response, function(index, item){
+                            var option = $("<option>").val(item.professor_id).text(item.fname+' '+item.lname);
+                            select.append(option);
+                        });
+                    },
+                    error: function(xhr, status, error){
+                        console.error(error);
+                    }
+                });
+            });
+
+            $("#professor").change(function() {
+                $('#result').empty();
+                $.ajax({
+                    url: '/admin/result/'+$(this).val()+'/count',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data){
+                        $('#total').text(data.student_count);
+                        
+                    },
+                    error: function(xhr, status, error){
+                        console.error(error);
+                    }
+                });
+
+                new gridjs.Grid({ 
+                    columns: [
+                        {
+                            id: 'question',
+                            name: 'Question',
+                            width: '200px',
+                        },
+                        {
+                            id: 'answer5',
+                            name: gridjs.html('<div style="text-align: center">5</div>'),
+                            width: '50px',
+                            formatter: (_, row) => gridjs.html(`<div style="text-align: center">${row.cells[1].data}</div>`)
+                        },
+                        {
+                            id: 'answer4',
+                            name: gridjs.html('<div style="text-align: center">4</div>'),
+                            width: '50px',
+                            formatter: (_, row) => gridjs.html(`<div style="text-align: center">${row.cells[2].data}</div>`)
+                        },
+                        {
+                            id: 'answer3',
+                            name: gridjs.html('<div style="text-align: center">3</div>'),
+                            width: '50px',
+                            formatter: (_, row) => gridjs.html(`<div style="text-align: center">${row.cells[3].data}</div>`)
+                        },
+                        {
+                            id: 'answer2',
+                            name: gridjs.html('<div style="text-align: center">2</div>'),
+                            width: '50px',
+                            formatter: (_, row) => gridjs.html(`<div style="text-align: center">${row.cells[4].data}</div>`)
+                        },
+                        {
+                            id: 'answer1',
+                            name: gridjs.html('<div style="text-align: center">1</div>'),
+                            width: '50px',
+                            formatter: (_, row) => gridjs.html(`<div style="text-align: center">${row.cells[5].data}</div>`)
+                        },
+                    ],
+
+                    server: {
+                        url: '/admin/result/'+$(this).val()+'/total',
+                        then: data => data.map(total => [
+                            total.question_text, total.percentage5, total.percentage4, total.percentage3, total.percentage2, total.percentage1
+                        ])
+                    }
+
+                }).render(document.getElementById('result')).forceRender();
+
+                $("#printBtn").click(function() {
+                    window.open('/admin/result/'+$("#professor").val()+'/'+$("#department").val()+'/print');
+                });
+                
+            });
+            
+        <?php endif; ?>
+
         <?php if($currentUrl == '/admin/dashboard') : ?>
 
             $.ajax({
@@ -258,22 +424,214 @@
         
         <?php endif; ?>
 
-        <?php if($_SERVER['REQUEST_URI'] === '/admin/questions/'): ?>
+        <?php if((rtrim(dirname($_SERVER['REQUEST_URI']), '/') . '/') === '/admin/questions/'): ?>
             // Question Table
+
+            $.ajax({
+                url: '/admin/category/list',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response){
+                    var select = $("#category_id");
+
+                    $.each(response, function(index, item){
+                        var option = $("<option>").val(item.category_id).text(item.category_name);
+                        select.append(option);
+                    });
+                },
+                error: function(xhr, status, error){
+                    console.error(error);
+                }
+            });
 
             var grid = new gridjs.Grid({ 
                 columns: ['Question Text', 'Actions'],
                 server: {
-                    url: '/admin/questions/<?=end(explode('/', $_SERVER['REQUEST_URI']))?>/list',
+                    url: '/admin/questions/<?=basename($_SERVER['REQUEST_URI'])?>/list',
                     then: data => data.map(question => [question.question_text, gridjs.html(`
-                    <button type="button" class="btn btn-warning text-white" onclick="$('#editQuestionModal').modal('show');$('#editQuestionModal #question_id').val('`+question.question_id+`');$('#editQuestionModal #question_text').val('`+question.question_text+`');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteQuestionModal').modal('show');$('#deleteQuestionModal #question_id').val('`+question.question_id+`');">Delete</button>
+                    <button type="button" class="btn btn-warning text-white" onclick="$('#editQuestionModal').modal('show');$('#editQuestionModal #question_id1').val('`+question.question_id+`');$('#editQuestionModal #question_text1').val('`+question.question_text+`');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteQuestionModal').modal('show');$('#deleteQuestionModal #question_id').val('`+question.question_id+`');">Delete</button>
                     `)])
                 },
                 search: true
             }).render(document.getElementById('questions'));
 
+            $('#addQuestionForm').submit(function (event){
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+                swalInit.fire({
+                    position: 'top-end',
+                    toast: true,
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                $.ajax({
+                    url: '/admin/questions/<?=basename($_SERVER['REQUEST_URI'])?>/create',
+                    method: 'POST',
+                    data: formData,
+                    success: function(data){
+                        data = JSON.parse(data);
+                        $('#addQuestionModal').modal('hide');
+                        $('#question_text').val('');
+                        grid.forceRender();
+                        if(data.success === 'false'){
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Question adding failed!',
+                                icon: 'error',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Question added successfully!',
+                                icon: 'success',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    },
+                    error: function(error){
+                        swalInit.close();
+                        swalInit.fire({
+                            title: 'Error',
+                            text: 'There is error occurred. Please contact the administrator.',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000
+                        });
+                        console.log("Error: ", error);
+                    }
+                });
+            });
+
+            $('#deleteQuestionForm').submit(function (event){
+                event.preventDefault();
+
+                var formData = $(this).serialize();
+                swalInit.fire({
+                    position: 'top-end',
+                    toast: true,
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                $.ajax({
+                    url: '/admin/questions/<?=basename($_SERVER['REQUEST_URI'])?>/delete',
+                    method: 'POST',
+                    data: formData,
+                    success: function(data){
+                        data = JSON.parse(data);
+                        $('#deleteQuestionModal').modal('hide')
+                        grid.forceRender();
+                        if(data.success === 'false'){
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Question deletion failed!',
+                                icon: 'error',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            swalInit.close();
+                            swalInit.fire({
+                                text: 'Question deleted successfully!',
+                                icon: 'success',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    },
+                    error: function(error){
+                        swalInit.close();
+                        swalInit.fire({
+                            title: 'Error',
+                            text: 'There is error occurred. Please contact the administrator.',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            timer: 3000
+                        });
+                        console.log("Error: ", error);
+                    }
+                });
+            });
+
+            $('#editQuestionForm').submit(function (event){
+            event.preventDefault();
+
+            var formData = $(this).serialize();
+            swalInit.fire({
+                position: 'top-end',
+                toast: true,
+                text: 'Please wait...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+            $.ajax({
+                url: '/admin/questions/<?=basename($_SERVER['REQUEST_URI'])?>/edit',
+                method: 'POST',
+                data: formData,
+                success: function(data){
+                    data = JSON.parse(data);
+                    $('#editQuestionModal').modal('hide');
+                    grid.forceRender();
+                    if(data.success === 'false'){
+                        swalInit.close();
+                        swalInit.fire({
+                            text: 'Question modification failed!',
+                            icon: 'error',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    } else {
+                        swalInit.close();
+                        swalInit.fire({
+                            text: 'Question modified successfully!',
+                            icon: 'success',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    }
+                },
+                error: function(error){
+                    swalInit.close();
+                    swalInit.fire({
+                        title: 'Error',
+                        text: 'There is error occurred. Please contact the administrator.',
+                        icon: 'error',
+                        toast: true,
+                        position: 'top-end',
+                        timer: 3000
+                    });
+                    console.log("Error: ", error);
+                }
+            });
+        });
 
         <?php endif; ?>
+
         <?php if($currentUrl == '/admin/section') : ?>
             // Section Table
 
@@ -908,7 +1266,7 @@
                 server: {
                     url: '/admin/category/list',
                     then: data => data.map(category => [category.category_name, gridjs.html(`
-                    <button type="button" class="btn btn-primary text-white" onclick="window.location='/admin/questions/1'">Questions</button>&nbsp; 
+                    <button type="button" class="btn btn-primary text-white" onclick="window.location='/admin/questions/`+category.category_id+`'">Questions</button>&nbsp; 
                     <button type="button" class="btn btn-warning text-white" onclick="$('#editCategoryModal').modal('show');$('#editCategoryModal #category_id').val('`+category.category_id+`');$('#editCategoryModal #category_name').val('`+category.category_name+`');">Edit</button>&nbsp;<button type="button" class="btn btn-danger text-white" onclick="$('#deleteCategoryModal').modal('show');$('#deleteCategoryModal #category_id').val('`+category.category_id+`');">Delete</button>
                     `)])
                 },
